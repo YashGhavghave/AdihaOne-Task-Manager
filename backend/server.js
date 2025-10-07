@@ -10,6 +10,7 @@ import RegisterRoute from "./routes/register.routes.js";
 import LoginRoute from "./routes/login.routes.js";
 import TaskRoute from "./routes/taskslist.routes.js";
 import TaskListRoute from "./routes/taskslist.routes.js";
+import logoutRoute from "./routes/logout.routes.js";
 
 const app = express();
 const port = 3000;
@@ -75,6 +76,7 @@ app.use("/", RegisterRoute);
 app.use("/", LoginRoute);
 app.use("/", TaskRoute);
 app.use("/", TaskListRoute);
+app.use("/", logoutRoute);
 
 // --- Default route ---
 app.get("/", (req, res) => {

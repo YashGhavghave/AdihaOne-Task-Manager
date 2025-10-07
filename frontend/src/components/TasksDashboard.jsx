@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function TasksDashboard() {
   const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState({ title: "", description: "" });
+  const navigate = useNavigate();
 
+  // Fetch all tasks
   const fetchTasks = async () => {
     try {
       const res = await axios.get("http://localhost:3000/api/taskslist", { withCredentials: true });
@@ -16,39 +19,69 @@ function TasksDashboard() {
 
   useEffect(() => { fetchTasks(); }, []);
 
+  // Handle input changes
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
+  // Create new task
   const handleCreate = async e => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:3000/api/taskslist", form, { withCredentials: true });
       setForm({ title: "", description: "" });
       fetchTasks();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // Update task
   const handleUpdate = async (id) => {
-    const title = prompt("New title:");
-    const description = prompt("New description:");
+    const title = prompt("Enter new title:");
+    const description = prompt("Enter new description:");
     if (!title || !description) return;
     try {
       await axios.put(`http://localhost:3000/api/taskslist/${id}`, { title, description }, { withCredentials: true });
       fetchTasks();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // Delete task
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/api/taskslist/${id}`, { withCredentials: true });
       fetchTasks();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Logout user
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:3000/api/logout", {}, { withCredentials: true });
+      localStorage.removeItem("authenticated");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Tasks Dashboard</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Tasks Dashboard</h2>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        </div>
 
+        {/* Create Task Form */}
         <form onSubmit={handleCreate} className="flex flex-col md:flex-row gap-4 mb-6">
           <input
             name="title"
@@ -71,6 +104,7 @@ function TasksDashboard() {
           </button>
         </form>
 
+        {/* Tasks List */}
         <ul className="space-y-4">
           {tasks.map(task => (
             <li key={task._id} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm">
