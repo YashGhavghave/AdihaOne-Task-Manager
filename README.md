@@ -1,2 +1,2 @@
-# AdihaOne-Task-Mamager
+# AdihaOne-Task-Manager
 Schedule manager
